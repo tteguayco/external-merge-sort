@@ -29,7 +29,7 @@ class RandomIntGenerator():
         self.range_left_limit = 2 ** (num_bits - 1) + 1
         self.range_right_limit = 2 ** num_bits
 
-    def get_random_int_list(self, size=500_000_000):
+    def get_random_int_list(self, size=100_000_000):
         """
         Returns an ndarray containing size integer numbers.
 

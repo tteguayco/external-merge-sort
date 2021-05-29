@@ -5,7 +5,7 @@ import numpy as np
 
 # -----------------------------------------------------------------------------
 
-N = 2_000_000
+N = 500_000_000
 DATA_PATH = "./src/data/"
 DATA_FILE_EXT = ".dat"
 DATA_LINE_SEP = "\n"
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     filepath = generate_file_path()
 
     start = time.time()
-    rnd_ints = rnd_int_generator.get_random_int_list()
+    rnd_ints = rnd_int_generator.get_random_int_list(size=N)
     rnd_ints.tofile(filepath)
     end = time.time()
     elapsed_time = end - start
