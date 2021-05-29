@@ -1,6 +1,7 @@
 import os
 import shutil
 import numpy as np
+import heapq
 
 # -----------------------------------------------------------------------------
 
@@ -98,13 +99,79 @@ class ExternalMergeSortProcessor():
                     dtype="int32")
                 self._sort_ints(chunk_ints, i)
 
+    def _insert_first_ints_in_heap(self, heap):
+        file_idx = 0
+
+        for filename in os.listdir(EXTERNAL_MEM_PATH):
+            filepath = os.path.join(EXTERNAL_MEM_PATH, filename)
+
+            with open(filepath, "rb") as f:
+                first_int = np.fromfile(f, count=1, dtype="int32")
+
+                if len(first_int) > 0:
+                    first_int = first_int[0]
+                    heapq.heappush(heap, (first_int, file_idx))
+
+            file_idx += 1
+
+        return heap
+
+    def _read_int_from_external_file(self, file_name, file_pointer):
+        """
+
+        """
+        file_path = os.path.join(EXTERNAL_MEM_PATH, file_name)
+
+        with open(file_path, "rb") as f:
+            offset = int(file_pointer * self.chunk_byte_size)
+            int_num = np.fromfile(
+                f,
+                offset=offset,
+                count=1,
+                dtype="int32")
+
+        if len(int_num) > 0:
+            return int_num[0]
+
+        return None
+
+    def _init_files_pointers(self):
+        num_files = len(os.listdir(EXTERNAL_MEM_PATH))
+
+        return np.zeros(num_files, dtype="int8")
+
     def _merge_sorted_chunk_files(self):
         """
         Once all chunks have been sorted and these results are stored in the
         external memory as files, these are merged into one single sorted file.
         """
 
-        pass
+        min_heap = []
+        heapq.heapify(min_heap)
+
+        min_heap = self._insert_first_ints_in_heap(min_heap)
+        file_names = os.listdir(EXTERNAL_MEM_PATH)
+        file_pointers = self._init_files_pointers()
+        dest_file_path = os.path.join(self.dest_path, self.source_file_name)
+
+        with open(dest_file_path, "w+") as f:
+            while len(min_heap) > 0:
+                smallest_node = heapq.heappop(min_heap)
+                smallest_int = smallest_node[0]
+                file_idx = smallest_node[1]
+
+                f.write(str(smallest_int))
+                file_pointers[file_idx] += 1
+
+                int2insert = self._read_int_from_external_file(
+                    file_names[file_idx],
+                    file_pointers[file_idx]
+                )
+
+                if int2insert:
+                    heapq.heappush(min_heap, (int2insert, file_idx))
+                else:
+                    # did we finish with this file completely?
 
     def sort(self):
         """
@@ -113,7 +180,7 @@ class ExternalMergeSortProcessor():
 
         """
 
-        self._clean_external_memory()
-        self._sort_chunks()
+        #self._clean_external_memory()
+        #self._sort_chunks()
         self._merge_sorted_chunk_files()
-        self._clean_external_memory()
+        #self._clean_external_memory()
