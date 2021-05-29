@@ -138,7 +138,7 @@ class ExternalMergeSortProcessor():
     def _init_files_pointers(self):
         num_files = len(os.listdir(EXTERNAL_MEM_PATH))
 
-        return np.zeros(num_files, dtype="int8")
+        return np.zeros(num_files, dtype="int32")
 
     def _merge_sorted_chunk_files(self):
         """

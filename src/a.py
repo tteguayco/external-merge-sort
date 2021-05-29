@@ -4,7 +4,7 @@ import utils.randomint as rndint
 
 # -----------------------------------------------------------------------------
 
-N = 20
+N = 10_000_000
 DATA_PATH = "./src/data/unsorted/"
 DATA_FILE_EXT = ".dat"
 DATA_LINE_SEP = "\n"

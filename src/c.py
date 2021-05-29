@@ -21,3 +21,4 @@ if __name__ == "__main__":
     print(sorted)
     print(len(int_array))
     print(int_array[:100])
+    print(int_array[-100:])
