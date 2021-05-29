@@ -1,11 +1,10 @@
 import os
 import time
 import utils.randomint as rndint
-import numpy as np
 
 # -----------------------------------------------------------------------------
 
-N = 500_000_000
+N = 1_000_000_000
 DATA_PATH = "./src/data/"
 DATA_FILE_EXT = ".dat"
 DATA_LINE_SEP = "\n"
@@ -24,7 +23,7 @@ def generate_file_path():
 
 
 if __name__ == "__main__":
-    rnd_int_generator = rndint.RandomIntGenerator(4)
+    rnd_int_generator = rndint.RandomIntGenerator()
     filepath = generate_file_path()
 
     start = time.time()

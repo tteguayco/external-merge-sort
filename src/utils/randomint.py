@@ -1,4 +1,3 @@
-import random
 import numpy as np
 
 
@@ -26,8 +25,11 @@ class RandomIntGenerator():
         """
 
         num_bits = self.n * 8
-        self.range_left_limit = 2 ** (num_bits - 1) + 1
-        self.range_right_limit = 2 ** num_bits
+        self.range_right_limit = (2 ** num_bits) / 2
+        self.range_left_limit = (-1) * self.range_right_limit
+
+        self.range_right_limit = int(self.range_right_limit)
+        self.range_left_limit = int(self.range_left_limit)
 
     def get_random_int_list(self, size=100_000_000):
         """
@@ -39,5 +41,5 @@ class RandomIntGenerator():
             low=self.range_left_limit,
             high=self.range_right_limit,
             size=size,
-            dtype='int64'
+            dtype='int32'
         )
