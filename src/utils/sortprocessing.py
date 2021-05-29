@@ -1,9 +1,11 @@
 import os
+import shutil
 import numpy as np
 
 # -----------------------------------------------------------------------------
 
 INT_BYTE_SIZE = 4
+EXTERNAL_MEM_PATH = "./src/external/sorted/"
 
 # -----------------------------------------------------------------------------
 
@@ -26,30 +28,92 @@ class ExternalMergeSortProcessor():
 
         """
 
+        if not isinstance(source_file_path, str):
+            raise TypeError("source_file_path must be str")
+
+        if not isinstance(dest_path, str):
+            raise TypeError("dest_path must be str")
+
+        if not isinstance(m, int):
+            raise TypeError("m must be int")
+
+        if len(source_file_path) == 0:
+            raise ValueError("source_file_path cannot be empty")
+
+        if len(dest_path) == 0:
+            raise ValueError("dest_path cannot be empty")
+
+        if m <= 1:
+            raise ValueError("m must be greater than 1")
+
         self.m = m
         self.source_file_path = source_file_path
         self.dest_path = dest_path
+        self.source_file_name = os.path.split(self.source_file_path)[1]
 
-        # Calculate info needed for further applying merge sort algorithm
+        # Calculate info needed for applying merge sort algorithm
         self.source_bytes_size = os.path.getsize(self.source_file_path)
         self.num_ints = int(self.source_bytes_size / INT_BYTE_SIZE)
         self.num_chunks = int(np.ceil(self.num_ints / self.m))
-        self.chunks_byte_size = self.num_chunks * INT_BYTE_SIZE
+        self.chunk_byte_size = self.m * INT_BYTE_SIZE
 
-    def _sort_ints(int_array):
-        pass
+    def _clean_external_memory(self):
+        shutil.rmtree(EXTERNAL_MEM_PATH)
+        os.mkdir(EXTERNAL_MEM_PATH)
+
+    def _sort_ints(self, int_array, chunk_idx):
+        """
+        Implements the in-memory sort for a given array of integers and stores
+        the result in the file path that simulates the external memory
+        (EXTERNAL_MEM_PATH).
+
+        Args:
+            int_array (np.array): Array of integers to be sorted.
+            chunk_idx (int): Index that identifies the chunk from which
+                int_array was taken.
+        """
+
+        ordered_array = np.sort(int_array, kind="quicksort")
+        dest_file_name = str(chunk_idx) + self.source_file_name
+        dest_file_path = os.path.join(EXTERNAL_MEM_PATH, dest_file_name)
+        ordered_array.tofile(dest_file_path)
 
     def _sort_chunks(self):
-    
+        """
+        Gets the integers from each chunk of the source binary file in order to
+        apply an in-memory sort algorithm on them.
+
+        Parallelization could be applied here: each chuck is sorted by a single
+        thread.
+
+        """
+
         with open(self.source_file_path, "rb") as f:
             for i in range(self.num_chunks):
-                offset = int(i * self.chunks_byte_size)
-                chunk_ints = np.fromfile(f, offset=offset)
-                self._sort_ints(chunk_ints)
+                offset = int(i * self.chunk_byte_size)
+                chunk_ints = np.fromfile(
+                    f,
+                    offset=offset,
+                    count=self.m,
+                    dtype="int32")
+                self._sort_ints(chunk_ints, i)
 
-    def _merge_sorted_files(self):
+    def _merge_sorted_chunk_files(self):
+        """
+        Once all chunks have been sorted and these results are stored in the
+        external memory as files, these are merged into one single sorted file.
+        """
+
         pass
 
     def sort(self):
+        """
+        Applies external merge sort to the integers contained associated to
+        an instance of ExternalMergeSortProcessor.
+
+        """
+
+        self._clean_external_memory()
         self._sort_chunks()
-        self._merge_sorted_files()
+        self._merge_sorted_chunk_files()
+        self._clean_external_memory()
