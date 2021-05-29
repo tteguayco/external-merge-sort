@@ -180,7 +180,7 @@ class ExternalMergeSortProcessor():
 
         """
 
-        #self._clean_external_memory()
-        #self._sort_chunks()
+        self._clean_external_memory()
+        self._sort_chunks()
         self._merge_sorted_chunk_files()
-        #self._clean_external_memory()
+        self._clean_external_memory()
