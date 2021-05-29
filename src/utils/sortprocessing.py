@@ -94,7 +94,6 @@ class ExternalMergeSortProcessor():
                 offset = int(i * self.chunk_byte_size)
                 chunk_ints = np.fromfile(
                     f,
-                    offset=offset,
                     count=self.m,
                     dtype="int32")
                 self._sort_ints(chunk_ints, i)
@@ -172,6 +171,7 @@ class ExternalMergeSortProcessor():
                     heapq.heappush(min_heap, (int2insert, file_idx))
                 else:
                     # did we finish with this file completely?
+                    pass
 
     def sort(self):
         """
@@ -181,6 +181,6 @@ class ExternalMergeSortProcessor():
         """
 
         #self._clean_external_memory()
-        #self._sort_chunks()
-        self._merge_sorted_chunk_files()
+        self._sort_chunks()
+        #self._merge_sorted_chunk_files()
         #self._clean_external_memory()

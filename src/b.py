@@ -2,9 +2,9 @@ import utils.sortprocessing as sortp
 
 # -----------------------------------------------------------------------------
 
-SOURCE_FILE_PATH = "./src/data/sample1.dat"
+SOURCE_FILE_PATH = "./src/data/unsorted/sample.dat"
 DEST_PATH = "./src/data/sorted/"
-M = 50_000
+M = 5
 
 # -----------------------------------------------------------------------------
 

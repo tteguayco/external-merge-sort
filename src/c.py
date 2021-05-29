@@ -2,8 +2,8 @@ import numpy as np
 
 # -----------------------------------------------------------------------------
 
-INPUT_FILE_PATH = "./src/external/sorted/1sample1.dat"
-#INPUT_FILE_PATH = "./src/data/sample1.dat"
+INPUT_FILE_PATH = "./src/external/sorted/1sample.dat"
+#INPUT_FILE_PATH = "./src/data/unsorted/sample.dat"
 
 # -----------------------------------------------------------------------------
 
