@@ -119,10 +119,11 @@ class ExternalMergeSortProcessor():
         """
 
         """
+
         file_path = os.path.join(EXTERNAL_MEM_PATH, file_name)
 
         with open(file_path, "rb") as f:
-            offset = int(file_pointer * self.chunk_byte_size)
+            offset = int(file_pointer * INT_BYTE_SIZE)
             int_num = np.fromfile(
                 f,
                 offset=offset,
@@ -143,23 +144,25 @@ class ExternalMergeSortProcessor():
         """
         Once all chunks have been sorted and these results are stored in the
         external memory as files, these are merged into one single sorted file.
+
+        It uses a min-heap-based approach.
         """
 
-        min_heap = []
-        heapq.heapify(min_heap)
+        heap = []
+        heapq.heapify(heap)
 
-        min_heap = self._insert_first_ints_in_heap(min_heap)
+        heap = self._insert_first_ints_in_heap(heap)
         file_names = os.listdir(EXTERNAL_MEM_PATH)
         file_pointers = self._init_files_pointers()
         dest_file_path = os.path.join(self.dest_path, self.source_file_name)
 
-        with open(dest_file_path, "w+") as f:
-            while len(min_heap) > 0:
-                smallest_node = heapq.heappop(min_heap)
+        with open(dest_file_path, "wb+") as f:
+            while len(heap) > 0:
+                smallest_node = heapq.heappop(heap)
                 smallest_int = smallest_node[0]
                 file_idx = smallest_node[1]
 
-                f.write(str(smallest_int))
+                f.write(smallest_int)
                 file_pointers[file_idx] += 1
 
                 int2insert = self._read_int_from_external_file(
@@ -168,10 +171,7 @@ class ExternalMergeSortProcessor():
                 )
 
                 if int2insert:
-                    heapq.heappush(min_heap, (int2insert, file_idx))
-                else:
-                    # did we finish with this file completely?
-                    pass
+                    heapq.heappush(heap, (int2insert, file_idx))
 
     def sort(self):
         """
@@ -181,6 +181,6 @@ class ExternalMergeSortProcessor():
         """
 
         #self._clean_external_memory()
-        self._sort_chunks()
-        #self._merge_sorted_chunk_files()
+        #self._sort_chunks()
+        self._merge_sorted_chunk_files()
         #self._clean_external_memory()
