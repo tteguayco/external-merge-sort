@@ -8,6 +8,11 @@ INPUT_FILE_PATH = "./src/data/sorted/sample.dat"
 
 # -----------------------------------------------------------------------------
 
+
+def is_sorted(int_array):
+    return np.all(int_array[:-1] <= int_array[1:])
+
+
 if __name__ == "__main__":
     int_array = None
     sorted = False
@@ -16,7 +21,7 @@ if __name__ == "__main__":
         int_array = np.fromfile(f, dtype="int32")
 
     if int_array is not None:
-        sorted = np.all(int_array[:-1] <= int_array[1:])
+        sorted = is_sorted(int_array)
 
     print(sorted)
     print(len(int_array))

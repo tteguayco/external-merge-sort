@@ -47,22 +47,22 @@ class ExternalMergeSortProcessor():
         if m <= 1:
             raise ValueError("m must be greater than 1")
 
-        self.m = m
-        self.source_file_path = source_file_path
-        self.dest_path = dest_path
-        self.source_file_name = os.path.split(self.source_file_path)[1]
+        self.__m = m
+        self.__source_file_path = source_file_path
+        self.__dest_path = dest_path
+        self.__source_file_name = os.path.split(self.__source_file_path)[1]
 
         # Calculate info needed for applying merge sort algorithm
-        self.source_bytes_size = os.path.getsize(self.source_file_path)
-        self.num_ints = int(self.source_bytes_size / INT_BYTE_SIZE)
-        self.num_chunks = int(np.ceil(self.num_ints / self.m))
-        self.chunk_byte_size = self.m * INT_BYTE_SIZE
+        self.__source_bytes_size = os.path.getsize(self.__source_file_path)
+        self.__num_ints = int(self.__source_bytes_size / INT_BYTE_SIZE)
+        self.__num_chunks = int(np.ceil(self.__num_ints / self.__m))
+        self.__chunk_byte_size = self.__m * INT_BYTE_SIZE
 
-    def _clean_external_memory(self):
+    def __clean_external_memory(self):
         shutil.rmtree(EXTERNAL_MEM_PATH)
         os.mkdir(EXTERNAL_MEM_PATH)
 
-    def _sort_ints(self, int_array, chunk_idx):
+    def __sort_ints(self, int_array, chunk_idx):
         """
         Implements the in-memory sort for a given array of integers and stores
         the result in the file path that simulates the external memory
@@ -75,11 +75,11 @@ class ExternalMergeSortProcessor():
         """
 
         ordered_array = np.sort(int_array, kind="quicksort")
-        dest_file_name = str(chunk_idx) + self.source_file_name
+        dest_file_name = str(chunk_idx) + self.__source_file_name
         dest_file_path = os.path.join(EXTERNAL_MEM_PATH, dest_file_name)
         ordered_array.tofile(dest_file_path)
 
-    def _sort_chunks(self):
+    def __sort_chunks(self):
         """
         Gets the integers from each chunk of the source binary file in order to
         apply an in-memory sort algorithm on them.
@@ -89,16 +89,16 @@ class ExternalMergeSortProcessor():
 
         """
 
-        with open(self.source_file_path, "rb") as f:
-            for i in range(self.num_chunks):
-                offset = int(i * self.chunk_byte_size)
+        with open(self.__source_file_path, "rb") as f:
+            for i in range(self.__num_chunks):
+                offset = int(i * self.__chunk_byte_size)
                 chunk_ints = np.fromfile(
                     f,
-                    count=self.m,
+                    count=self.__m,
                     dtype="int32")
-                self._sort_ints(chunk_ints, i)
+                self.__sort_ints(chunk_ints, i)
 
-    def _insert_first_ints_in_heap(self, heap):
+    def __insert_first_ints_in_heap(self, heap):
         file_idx = 0
 
         for filename in os.listdir(EXTERNAL_MEM_PATH):
@@ -115,7 +115,7 @@ class ExternalMergeSortProcessor():
 
         return heap
 
-    def _read_int_from_external_file(self, file_name, file_pointer):
+    def __read_int_from_external_file(self, file_name, file_pointer):
         """
 
         """
@@ -135,12 +135,12 @@ class ExternalMergeSortProcessor():
 
         return None
 
-    def _init_files_pointers(self):
+    def __init_files_pointers(self):
         num_files = len(os.listdir(EXTERNAL_MEM_PATH))
 
         return np.zeros(num_files, dtype="int32")
 
-    def _merge_sorted_chunk_files(self):
+    def __merge_sorted_chunk_files(self):
         """
         Once all chunks have been sorted and these results are stored in the
         external memory as files, these are merged into one single sorted file.
@@ -151,10 +151,10 @@ class ExternalMergeSortProcessor():
         heap = []
         heapq.heapify(heap)
 
-        heap = self._insert_first_ints_in_heap(heap)
+        heap = self.__insert_first_ints_in_heap(heap)
         file_names = os.listdir(EXTERNAL_MEM_PATH)
-        file_pointers = self._init_files_pointers()
-        dest_file_path = os.path.join(self.dest_path, self.source_file_name)
+        file_pointers = self.__init_files_pointers()
+        dest_file_path = os.path.join(self.__dest_path, self.__source_file_name)
 
         with open(dest_file_path, "wb+") as f:
             while len(heap) > 0:
@@ -165,7 +165,7 @@ class ExternalMergeSortProcessor():
                 f.write(smallest_int)
                 file_pointers[file_idx] += 1
 
-                int2insert = self._read_int_from_external_file(
+                int2insert = self.__read_int_from_external_file(
                     file_names[file_idx],
                     file_pointers[file_idx]
                 )
@@ -180,7 +180,7 @@ class ExternalMergeSortProcessor():
 
         """
 
-        self._clean_external_memory()
-        self._sort_chunks()
-        self._merge_sorted_chunk_files()
-        self._clean_external_memory()
+        self.__clean_external_memory()
+        self.__sort_chunks()
+        self.__merge_sorted_chunk_files()
+        self.__clean_external_memory()

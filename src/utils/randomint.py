@@ -12,24 +12,24 @@ class RandomIntGenerator():
 
         """
 
-        self.n = n
-        self.range_left_limit = -1
-        self.range_right_limit = -1
+        self.__n = n
+        self.__range_left_limit = -1
+        self.__range_right_limit = -1
 
-        self._calculate_range_limits()
+        self.__calculate_range_limits()
 
-    def _calculate_range_limits(self):
+    def __calculate_range_limits(self):
         """
         Calculates the range from which the random integer will be generated.
 
         """
 
-        num_bits = self.n * 8
-        self.range_right_limit = (2 ** num_bits) / 2
-        self.range_left_limit = (-1) * self.range_right_limit
+        num_bits = self.__n * 8
+        self.__range_right_limit = (2 ** num_bits) / 2
+        self.__range_left_limit = (-1) * self.__range_right_limit
 
-        self.range_right_limit = int(self.range_right_limit)
-        self.range_left_limit = int(self.range_left_limit)
+        self.__range_right_limit = int(self.__range_right_limit)
+        self.__range_left_limit = int(self.__range_left_limit)
 
     def get_random_int_list(self, size=100_000_000):
         """
@@ -38,8 +38,8 @@ class RandomIntGenerator():
         """
 
         return np.random.randint(
-            low=self.range_left_limit,
-            high=self.range_right_limit,
+            low=self.__range_left_limit,
+            high=self.__range_right_limit,
             size=size,
             dtype='int32'
         )
