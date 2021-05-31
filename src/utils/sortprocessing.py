@@ -214,8 +214,8 @@ class ExternalMergeSortProcessor():
 
     def sort(self):
         """
-        Applies external merge sort to the integers contained associated to
-        an instance of ExternalMergeSortProcessor.
+        Runs external merge sort algorithm on the integers contained in the
+        source file associated to the instance of ExternalMergeSortProcessor.
 
         """
 
