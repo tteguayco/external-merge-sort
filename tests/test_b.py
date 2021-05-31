@@ -11,9 +11,9 @@ import unittest
 # -----------------------------------------------------------------------------
 
 INT_BYTE_SIZE = 4
-EXTERNAL_MEM_PATH = "./external/sorted/"
 SORTED_PATH = "./data/sorted/"
 UNSORTED_FILE_PATH = "./data/unsorted/sample_test.dat"
+EXTERNAL_MEM_PATH = "./external/sorted/"
 
 # -----------------------------------------------------------------------------
 
@@ -29,6 +29,7 @@ class TestExternalMergeSort(unittest.TestCase):
         proc = sortp.ExternalMergeSortProcessor(
             UNSORTED_FILE_PATH,
             SORTED_PATH,
+            EXTERNAL_MEM_PATH,
             m)
         proc.sort()
 
